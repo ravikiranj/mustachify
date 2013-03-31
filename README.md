@@ -1,5 +1,7 @@
 # mustachify.py
-A python script superimpose a mustache on any image.
+
+# Description
+A python script that superimposes a mustache over an image of a face using facial recognition. Currently only works with images containing a front view of a single face.
 
 # Dependencies
 * [OpenCV](http://opencvlibrary.sourceforge.net)
