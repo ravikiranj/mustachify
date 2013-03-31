@@ -47,7 +47,8 @@ Options:
     -i, --inputfile           Input image file
     -o, --outputfile          Output image file
     -m, --mustache            Mustache image file
-    -d, --debug               Print debugging information"""
+    -d, --debug               Print debugging information and overlay debugg
+ing rectangles on image"""
 
 
 def detect_features(image, cascade, minsize):
