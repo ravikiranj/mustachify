@@ -5,11 +5,11 @@ A python script that superimposes a mustache over an image of a face using facia
 
 ## Dependencies
 * [OpenCV](http://opencvlibrary.sourceforge.net)
-* [PIL image library](http://www.pythonware.com/products/pil/)
+* [PIL Imaging Library](http://www.pythonware.com/products/pil/)
 
 ## Usage
     mustachify.py [-i input file] [-o output file] [options]
-    
+
     Options:
         -h, --help                Display usage information
         -i, --inputfile           Input image file
