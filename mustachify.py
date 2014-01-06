@@ -54,9 +54,9 @@ ing rectangles on image"""
 def detect_features(image, cascade, minsize):
     features = []
     storage = cv.CreateMemStorage()
-    loadedCascade = cv.Load(cascade)
+    loaded_cascade = cv.Load(cascade)
 
-    detected = cv.HaarDetectObjects(image, loadedCascade, storage, 1.2, 2,
+    detected = cv.HaarDetectObjects(image, loaded_cascade, storage, 1.2, 2,
                                     cv.CV_HAAR_DO_CANNY_PRUNING, minsize)
     if DEBUG_MODE:
         print "\t\tFound: " + str(detected)
@@ -122,9 +122,9 @@ def main(argv=None):
     if DEBUG_MODE:
         print "Processing " + input_file
 
-    pilImage = Image.open(input_file)
-    cvImage = cv.CreateImageHeader(pilImage.size, cv.IPL_DEPTH_8U, 3)
-    cv.SetData(cvImage, pilImage.tostring())
+    pil_image = Image.open(input_file)
+    cv_image = cv.CreateImageHeader(pil_image.size, cv.IPL_DEPTH_8U, 3)
+    cv.SetData(cv_image, pil_image.tostring())
 
     mustache = Image.open(os.path.join("mustaches", mustache_file))
 
@@ -134,13 +134,13 @@ def main(argv=None):
 
     if DEBUG_MODE:
         print "\tFinding eyes:"
-    eyes = detect_features(cvImage, EYES, (10, 10))
+    eyes = detect_features(cv_image, EYES, (10, 10))
     if DEBUG_MODE:
         print "\tFinding nose:"
-    noses = detect_features(cvImage, NOSE, (10, 10))
+    noses = detect_features(cv_image, NOSE, (10, 10))
     if DEBUG_MODE:
         print "\tFinding face:"
-    faces = detect_features(cvImage, FACE, (70, 70))
+    faces = detect_features(cv_image, FACE, (70, 70))
 
     if DEBUG_MODE:
         print "\tFound " + str(len(eyes)) + " eye(s), " + str(len(noses)) + \
@@ -156,23 +156,23 @@ def main(argv=None):
             eyes[1] = eyes[0]
             eyes[0] = temp
 
-        eyeL_x = eyes[0][0]
-        eyeL_y = eyes[0][1]
-        eyeL_w = eyes[0][2]
-        eyeL_h = eyes[0][3]
-        eyeR_x = eyes[1][0]
-        eyeR_y = eyes[1][1]
-        eyeR_w = eyes[1][2]
-        eyeR_h = eyes[1][3]
+        eye_L_x = eyes[0][0]
+        eye_L_y = eyes[0][1]
+        eye_L_w = eyes[0][2]
+        eye_L_h = eyes[0][3]
+        eye_R_x = eyes[1][0]
+        eye_R_y = eyes[1][1]
+        eye_R_w = eyes[1][2]
+        eye_R_h = eyes[1][3]
 
         # Redefine x and y coordinates as center of eye
-        eyeL_x = int(1.0 * eyeL_x + (eyeL_w / 2))
-        eyeL_y = int(1.0 * eyeL_y + (eyeL_h / 2))
-        eyeR_x = int(1.0 * eyeR_x + (eyeR_w / 2))
-        eyeR_y = int(1.0 * eyeR_y + (eyeR_h / 2))
+        eye_L_x = int(1.0 * eye_L_x + (eye_L_w / 2))
+        eye_L_y = int(1.0 * eye_L_y + (eye_L_h / 2))
+        eye_R_x = int(1.0 * eye_R_x + (eye_R_w / 2))
+        eye_R_y = int(1.0 * eye_R_y + (eye_R_h / 2))
 
         mustache_angle = math.degrees(math.atan(-1.0 *
-                                      (eyeR_y-eyeL_y)/(eyeR_x-eyeL_x)))
+                                      (eye_R_y-eye_L_y)/(eye_R_x-eye_L_x)))
 
         # Don't rotate mustache if it looks like one of the eyes
         # was misplaced
@@ -180,8 +180,8 @@ def main(argv=None):
             mustache_angle = 0
 
         if DEBUG_MODE:
-                draw_rectangle(cvImage, eyes[0], (0, 255, 0))
-                draw_rectangle(cvImage, eyes[1], (0, 255, 0))
+                draw_rectangle(cv_image, eyes[0], (0, 255, 0))
+                draw_rectangle(cv_image, eyes[1], (0, 255, 0))
                 print "\tMustache angle = " + str(mustache_angle)
     else:
         mustache_angle = 0
@@ -200,7 +200,7 @@ def main(argv=None):
         mustache_h = int(1.0 * mustache_w / mustache_aspect_ratio)
 
         if DEBUG_MODE:
-            draw_rectangle(cvImage, faces[0], (0, 0, 255))
+            draw_rectangle(cv_image, faces[0], (0, 0, 255))
             print "\tMustache width = " + str(mustache_w)
     else:
         # If for some reason a face wasn't found, guess a mustache width
@@ -252,7 +252,7 @@ def main(argv=None):
                                        nose_w))
 
         if DEBUG_MODE:
-            draw_rectangle(cvImage, noses[0], (255, 0, 0))
+            draw_rectangle(cv_image, noses[0], (255, 0, 0))
             print "\tMustache center = (" + str(mustache_x) + ", " + \
                   str(mustache_y) + ")"
 
@@ -262,11 +262,11 @@ def main(argv=None):
         else:
             # Don't apply a mustache - not enough information available
             # Save original image and exit
-            pilImage.save(output_file, "JPEG")
+            pil_image.save(output_file, "JPEG")
             sys.exit()
 
     # Convert image to a format that supports image overlays with alpha
-    pilImage = Image.fromstring("RGB", cv.GetSize(cvImage), cvImage.tostring())
+    pil_image = Image.fromstring("RGB", cv.GetSize(cv_image), cv_image.tostring())
 
     # Redefine mustache x and y to be center of mustache
     mustache_x += int(mustache_w / 2.0)
@@ -284,11 +284,11 @@ def main(argv=None):
                                Image.ANTIALIAS)
 
     # Superimpose the mustache on the face
-    pilImage.paste(mustache, (mustache_x-int(mustache.size[0] / 2.0),
+    pil_image.paste(mustache, (mustache_x-int(mustache.size[0] / 2.0),
                    mustache_y-int(mustache.size[1] / 2.0)), mustache)
 
     # Save the image into the output file
-    pilImage.save(output_file, "JPEG")
+    pil_image.save(output_file, "JPEG")
 
 if __name__ == "__main__":
     sys.exit(main())
