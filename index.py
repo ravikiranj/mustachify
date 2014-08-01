@@ -19,7 +19,7 @@ def getGoogleImageSearchUrl():
     if keyword == "":
         return ""
 
-    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + urllib.quote(keyword)
+    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?safe=active&v=1.0&q=" + urllib.quote(keyword)
     r = requests.get(googleImageSearchUrl)
     if r.status_code != 200:
         return ""
