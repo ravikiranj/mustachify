@@ -7,13 +7,12 @@ import json
 import mustachify
 import pyimgur
 
-downloadImagePath = "/tmp/gs_image.jpg"
-mustachifyImagePath = "/tmp/mustachfied_image.jpg"
+downloadImagePath = "gs_image.jpg"
+mustachifyImagePath = "mustachfied_image.jpg"
 keyword = " "
 
 def getGoogleImageSearchUrl():
     form = cgi.FieldStorage()
-    keyword = "ravikiran j" 
     if form.has_key('q'):
         keyword = form['q'].value
 
@@ -46,11 +45,10 @@ def uploadToImgur():
     return uploaded_image.link
 #end
 
-
 url = getGoogleImageSearchUrl()
-resp = "There was an error while mustachifying, I blame Ravi!"
+msg = "There was an error while mustachifying, I blame Ravi!"
 if (url != ""):
     downloadAndMustachifyImage(url)
-    resp = uploadToImgur()
+    msg = uploadToImgur()
 
-print resp
+print msg

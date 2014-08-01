@@ -185,7 +185,8 @@ def main(argv=None):
                 print "\tMustache angle = " + str(mustache_angle)
     else:
         mustache_angle = 0
-        print "\tTwo eyes not found - using mustache angle of 0"
+        if DEBUG_MODE:
+            print "\tTwo eyes not found - using mustache angle of 0"
 
     if len(faces) > 0:
         face_x = faces[0][0]
@@ -222,8 +223,9 @@ def main(argv=None):
                          (MUSTACHE_VERTICAL_POSITION_RATIO * face_h)) - \
             int(1.0 * mustache_h / 2)
         return (mustache_x, mustache_y)
-        print "\tNo nose found - guessing nose center of (" + \
-              str(mustache_x) + ", " + str(mustache_y) + ")"
+        if DEBUG_MODE:
+            print "\tNo nose found - guessing nose center of (" + \
+                  str(mustache_x) + ", " + str(mustache_y) + ")"
 
     if len(noses) > 0:
         # If more than one nose found, take noses[0] (the one with the
