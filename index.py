@@ -11,20 +11,27 @@ import sys
 
 downloadImagePath = "gs_image.jpg"
 mustachifyImagePath = "mustachfied_image.jpg"
-keyword = " "
 
-def getGoogleImageSearchUrl():
+def getSearchQuery():
+    query = ""
     form = cgi.FieldStorage()
-    keyword = ""
     if form.has_key('q'):
-        keyword = form['q'].value
+        query = form['q'].value
     elif len(sys.argv) > 1:
-        keyword = sys.argv[1]
+        query = sys.argv[1]
+    return query
+#end
 
-    if keyword == "":
-        return ""
+def getUrl():
+    url = ""
+    form = cgi.FieldStorage()
+    if form.has_key('url'):
+        url = form['url'].value
+    return url
+#end
 
-    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&imgtype=face&q=" + urllib.quote(keyword)
+def getGoogleImageSearchUrl(query):
+    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&imgtype=face&q=" + urllib.quote(query)
     r = requests.get(googleImageSearchUrl)
     if r.status_code != 200:
         return ""
@@ -45,17 +52,27 @@ def downloadAndMustachifyImage(url):
     mustachify.main(argv)
 #end
 
-def uploadToImgur():
+def uploadToImgur(query):
     CLIENT_ID = "0e2beed54800eb2"
     im = pyimgur.Imgur(CLIENT_ID)
-    uploaded_image = im.upload_image(mustachifyImagePath, title="Mustachify "+keyword)
+    uploaded_image = im.upload_image(mustachifyImagePath, title="Mustachify "+query)
     return uploaded_image.link
 #end
 
-url = getGoogleImageSearchUrl()
 msg = "There was an error while mustachifying, I blame Ravi!"
-if (url != ""):
-    downloadAndMustachifyImage(url)
-    msg = uploadToImgur()
+try:
+    query = getSearchQuery()
+    url = getUrl()
 
-print msg
+    if query != "" and url == "":
+        url = getGoogleImageSearchUrl(query)
+
+    if url != "":
+        downloadAndMustachifyImage(url)
+        msg = uploadToImgur(query)
+    print msg
+except:
+    print msg
+    import sys
+    print >> sys.stderr, sys.exc_info()[0]
+
