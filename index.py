@@ -6,6 +6,8 @@ import requests
 import json
 import mustachify
 import pyimgur
+import random
+import sys
 
 downloadImagePath = "gs_image.jpg"
 mustachifyImagePath = "mustachfied_image.jpg"
@@ -13,20 +15,25 @@ keyword = " "
 
 def getGoogleImageSearchUrl():
     form = cgi.FieldStorage()
+    keyword = ""
     if form.has_key('q'):
         keyword = form['q'].value
+    elif len(sys.argv) > 1:
+        keyword = sys.argv[1]
 
     if keyword == "":
         return ""
 
-    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?safe=active&v=1.0&q=" + urllib.quote(keyword)
+    googleImageSearchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&imgtype=face&q=" + urllib.quote(keyword)
     r = requests.get(googleImageSearchUrl)
     if r.status_code != 200:
         return ""
     jsonResp = json.loads(r.text)
     url = ""
-    if "responseData" in jsonResp and "results" in jsonResp["responseData"] and len(jsonResp["responseData"]["results"]) > 0 and "url" in jsonResp["responseData"]["results"][0]:
-        url = jsonResp["responseData"]["results"][0]["url"]
+    if "responseData" in jsonResp and "results" in jsonResp["responseData"] and len(jsonResp["responseData"]["results"]) > 0:
+        image = random.choice(jsonResp["responseData"]["results"])
+        if "url" in image:
+            url = image["url"]
     return url
 #end
 
